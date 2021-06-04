@@ -101,7 +101,7 @@ public struct LineChartView: View {
                              gradient: self.style.gradientColor
                         )
                     }
-                    .frame(width: frame.width, height: frame.height)
+                    .frame(width: frame.width, height: frame.height + (legend == nil && rateValue == nil ? 15 : 0))
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                 }
             }.frame(width: self.formSize.width, height: self.formSize.height)
