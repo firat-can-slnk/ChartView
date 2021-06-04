@@ -120,25 +120,28 @@ public struct LineChartView: View {
     
     var legendAndRateValueView: some View
     {
-        let sideBySide = HStack
+        Group
         {
-            legendView
-            Spacer()
-            rateValueView
-                .fixedSize()
-                .padding(.trailing)
-        }
-        switch formSize {
-            case ChartForm.small.getSize(): return sideBySide
-            case ChartForm.detail.getSize(): return sideBySide
-            case ChartForm.large.getSize(): return sideBySide
-            default:
-                return Group
-                {
-                    legendView
-                    
-                    rateValueView
-                }
+            let sideBySide = HStack
+            {
+                legendView
+                Spacer()
+                rateValueView
+                    .fixedSize()
+                    .padding(.trailing)
+            }
+            switch formSize {
+                case ChartForm.small.getSize(): sideBySide
+                case ChartForm.detail.getSize(): sideBySide
+                case ChartForm.large.getSize(): sideBySide
+                default:
+                    Group
+                    {
+                        legendView
+                        
+                        rateValueView
+                    }
+            }
         }
     }
     var legendView: some View {
