@@ -16,13 +16,15 @@ public struct LineChartView: View {
     public var style: ChartStyle
     public var darkModeStyle: ChartStyle
     
+    @State var showSelectionLabel: Bool = false
+    
     public var formSize:CGSize
     public var dropShadow: Bool
     public var valueSpecifier:String
     
     @State private var touchLocation:CGPoint = .zero
     @State private var showIndicatorDot: Bool = false
-    @State private var currentValue: Double = 2 {
+    @State private var currentValue: (String?, Double) = (nil, 2) {
         didSet{
             if (oldValue != self.currentValue && showIndicatorDot) {
                 HapticFeedback.playSelection()
@@ -33,7 +35,7 @@ public struct LineChartView: View {
     var frame = CGSize(width: 180, height: 120)
     private var rateValue: Int?
     
-    public init(data: [Double],
+    public init(data: ChartData,
                 title: String,
                 legend: String? = nil,
                 style: ChartStyle = Styles.lineChartStyleOne,
@@ -42,7 +44,7 @@ public struct LineChartView: View {
                 dropShadow: Bool = true,
                 valueSpecifier: String = "%.0f") {
         
-        self.data = ChartData(points: data)
+        self.data = data
         self.title = title
         self.legend = legend
         self.style = style
@@ -72,13 +74,15 @@ public struct LineChartView: View {
                     }else{
                         HStack{
                             Spacer()
-                            Text("\(self.currentValue, specifier: self.valueSpecifier)")
+                            Text("\(self.currentValue.1, specifier: self.valueSpecifier)")
                                 .font(.system(size: 41, weight: .bold, design: .default))
                                 .offset(x: 0, y: 10)
                             Spacer()
                         }
-                        .padding(.top)
                         .transition(.scale)
+                        
+                        selectionLabelView
+                            .padding(.top, 2)
                     }
                     Spacer()
                 }.frame(width: self.formSize.width, height: self.formSize.height)
@@ -110,6 +114,19 @@ public struct LineChartView: View {
                 self.showIndicatorDot = false
             })
         )
+    }
+    var selectionLabelView: some View
+    {
+        Group
+        {
+            if let text = currentValue.0
+            {
+                let foregroundColor = self.colorScheme == .dark ? self.darkModeStyle.legendTextColor : self.style.legendTextColor
+                 Text(text)
+                    .font(.callout)
+                    .foregroundColor(foregroundColor)
+            }
+        }
     }
     var topRowView: some View
     {
@@ -210,7 +227,7 @@ public struct LineChartView: View {
         
         let index:Int = Int(round((toPoint.x)/stepWidth))
         if (index >= 0 && index < points.count){
-            self.currentValue = points[index]
+            self.currentValue = data.points[index]
             return CGPoint(x: CGFloat(index)*stepWidth, y: CGFloat(points[index])*stepHeight)
         }
         return .zero
@@ -218,7 +235,12 @@ public struct LineChartView: View {
 }
 
 struct WidgetView_Previews: PreviewProvider {
-    static let data: [Double] = Array(0...500).shuffled().map { Double($0) }.suffix(10)
+    static let data = ChartData(values: [
+        ("Q1 2020", 10),
+        ("Q2 2020", 25),
+        ("Q3 2020", 28),
+        ("Q4 2020", 18),
+    ])
     static let title = "Line chart"
     static let legend = "Basic"
     
