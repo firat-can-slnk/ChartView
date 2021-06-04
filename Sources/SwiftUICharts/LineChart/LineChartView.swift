@@ -195,7 +195,7 @@ public struct LineChartView: View {
 }
 
 struct WidgetView_Previews: PreviewProvider {
-    static let data: [Double] = [10, 10, 10, 10, 0, 10, 10, 10, 10, 10, 10, 10, 0, 10, 10, 10, 10]
+    static let data: [Double] = Array(0...500).shuffled().map { Double($0) }.suffix(10)
     static let title = "Line chart"
     static let legend = "Basic"
     
