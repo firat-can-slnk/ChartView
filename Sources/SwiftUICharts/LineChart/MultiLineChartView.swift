@@ -50,7 +50,7 @@ public struct MultiLineChartView: View {
                 title: String,
                 legend: String? = nil,
                 style: ChartStyle = Styles.lineChartStyleOne,
-                form: CGSize = ChartForm.medium,
+                form: ChartForm = ChartForm.medium,
                 rateValue: Int? = nil,
                 dropShadow: Bool = true,
                 valueSpecifier: String = "%.1f") {
@@ -60,7 +60,7 @@ public struct MultiLineChartView: View {
         self.legend = legend
         self.style = style
         self.darkModeStyle = style.darkModeStyle != nil ? style.darkModeStyle! : Styles.lineViewDarkMode
-        self.formSize = form
+        self.formSize = form.getSize()
         frame = CGSize(width: self.formSize.width, height: self.formSize.height/2)
         self.rateValue = rateValue
         self.dropShadow = dropShadow

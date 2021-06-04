@@ -16,13 +16,15 @@ public struct LineChartView: View {
     public var style: ChartStyle
     public var darkModeStyle: ChartStyle
     
+    @State var showSelectionLabel: Bool = false
+    
     public var formSize:CGSize
     public var dropShadow: Bool
     public var valueSpecifier:String
     
     @State private var touchLocation:CGPoint = .zero
     @State private var showIndicatorDot: Bool = false
-    @State private var currentValue: Double = 2 {
+    @State private var currentValue: (String?, Double) = (nil, 2) {
         didSet{
             if (oldValue != self.currentValue && showIndicatorDot) {
                 HapticFeedback.playSelection()
@@ -33,24 +35,24 @@ public struct LineChartView: View {
     var frame = CGSize(width: 180, height: 120)
     private var rateValue: Int?
     
-    public init(data: [Double],
+    public init(data: ChartData,
                 title: String,
                 legend: String? = nil,
                 style: ChartStyle = Styles.lineChartStyleOne,
-                form: CGSize? = ChartForm.medium,
-                rateValue: Int? = 14,
-                dropShadow: Bool? = true,
-                valueSpecifier: String? = "%.1f") {
+                form: ChartForm = ChartForm.medium,
+                rateValue: Int? = nil,
+                dropShadow: Bool = true,
+                valueSpecifier: String = "%.0f") {
         
-        self.data = ChartData(points: data)
+        self.data = data
         self.title = title
         self.legend = legend
         self.style = style
         self.darkModeStyle = style.darkModeStyle != nil ? style.darkModeStyle! : Styles.lineViewDarkMode
-        self.formSize = form!
+        self.formSize = form.getSize()
         frame = CGSize(width: self.formSize.width, height: self.formSize.height/2)
-        self.dropShadow = dropShadow!
-        self.valueSpecifier = valueSpecifier!
+        self.dropShadow = dropShadow
+        self.valueSpecifier = valueSpecifier
         self.rateValue = rateValue
     }
     
@@ -58,60 +60,48 @@ public struct LineChartView: View {
         ZStack(alignment: .center){
             RoundedRectangle(cornerRadius: 20)
                 .fill(self.colorScheme == .dark ? self.darkModeStyle.backgroundColor : self.style.backgroundColor)
-                .frame(width: frame.width, height: self.formSize.height + 30, alignment: .center)
+                .frame(width: frame.width, height: self.formSize.height, alignment: .center)
                 .shadow(color: self.style.dropShadowColor, radius: self.dropShadow ? 8 : 0)
-            VStack(alignment: .leading){
-                if(!self.showIndicatorDot){
-                    VStack(alignment: .leading, spacing: 8){
-                        Text(self.title)
-                            .font(.title)
-                            .bold()
-                            .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
-                        if (self.legend != nil){
-                            Text(self.legend!)
-                                .font(.callout)
-                                .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.legendTextColor :self.style.legendTextColor)
+            ZStack(alignment: .top){
+                VStack
+                {
+                    if(!self.showIndicatorDot){
+                        topRowView
+                        .transition(.opacity)
+                        .animation(.easeIn(duration: 0.1))
+                        .padding([.leading, .top])
+                        .frame(width: frame.width, height: self.formSize.height, alignment: .topLeading)
+                    }else{
+                        HStack{
+                            Spacer()
+                            Text("\(self.currentValue.1, specifier: self.valueSpecifier)")
+                                .font(.system(size: 41, weight: .bold, design: .default))
+                                .offset(x: 0, y: 10)
+                            Spacer()
                         }
-                        HStack {
-                            
-                            if (self.rateValue ?? 0 != 0)
-                            {
-                                if (self.rateValue ?? 0 >= 0){
-                                    Image(systemName: "arrow.up")
-                                }else{
-                                    Image(systemName: "arrow.down")
-                                }
-                                Text("\(self.rateValue!)%")
-                            }
-                        }
+                        .transition(.scale)
+                        
+                        selectionLabelView
+                            .padding(.top, 2)
                     }
-                    .transition(.opacity)
-                    .animation(.easeIn(duration: 0.1))
-                    .padding([.leading, .top])
-                }else{
-                    HStack{
-                        Spacer()
-                        Text("\(self.currentValue, specifier: self.valueSpecifier)")
-                            .font(.system(size: 41, weight: .bold, design: .default))
-                            .offset(x: 0, y: 30)
-                        Spacer()
+                    Spacer()
+                }.frame(width: self.formSize.width, height: self.formSize.height)
+                VStack
+                {
+                    Spacer()
+                    GeometryReader{ geometry in
+                        Line(data: self.data,
+                             frame: .constant(geometry.frame(in: .local)),
+                             touchLocation: self.$touchLocation,
+                             showIndicator: self.$showIndicatorDot,
+                             minDataValue: .constant(nil),
+                             maxDataValue: .constant(nil),
+                             gradient: self.style.gradientColor
+                        )
                     }
-                    .transition(.scale)
+                    .frame(width: frame.width, height: frame.height + (legend == nil && rateValue == nil ? 15 : 0))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
                 }
-                Spacer()
-                GeometryReader{ geometry in
-                    Line(data: self.data,
-                         frame: .constant(geometry.frame(in: .local)),
-                         touchLocation: self.$touchLocation,
-                         showIndicator: self.$showIndicatorDot,
-                         minDataValue: .constant(nil),
-                         maxDataValue: .constant(nil),
-                         gradient: self.style.gradientColor
-                    )
-                }
-                .frame(width: frame.width, height: frame.height)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-                .offset(x: 0, y: 0)
             }.frame(width: self.formSize.width, height: self.formSize.height)
         }
         .gesture(DragGesture()
@@ -125,6 +115,113 @@ public struct LineChartView: View {
             })
         )
     }
+    var selectionLabelView: some View
+    {
+        Group
+        {
+            if let text = currentValue.0
+            {
+                let foregroundColor = self.colorScheme == .dark ? self.darkModeStyle.legendTextColor : self.style.legendTextColor
+                 Text(text)
+                    .font(.callout)
+                    .foregroundColor(foregroundColor)
+            }
+        }
+    }
+    var topRowView: some View
+    {
+        VStack(alignment: .leading, spacing: 8)
+        {
+            let title = Text(self.title)
+                            .font(.title)
+                            .bold()
+                            .lineLimit(1)
+                            .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
+                            .minimumScaleFactor(0.8)
+                            .padding(.trailing)
+            
+            if formSize != ChartForm.large.getSize() && formSize != ChartForm.extraLarge.getSize() {
+                
+                title
+                legendAndRateValueView
+            }
+            else
+            {
+                HStack
+                {
+                    title
+                    Spacer()
+                    rateValueView
+                }
+                legendView
+            }
+        }
+        
+    }
+    var legendAndRateValueView: some View
+    {
+        Group
+        {
+            let sideBySide = HStack
+            {
+                if legend != nil
+                {
+                    legendView
+                    Spacer()
+                }
+                rateValueView
+            }
+            switch formSize {
+                case ChartForm.small.getSize(): sideBySide
+                case ChartForm.detail.getSize(): sideBySide
+                case ChartForm.large.getSize(): sideBySide
+                default:
+                    Group
+                    {
+                        legendView
+                        
+                        rateValueView
+                    }
+            }
+        }
+    }
+    var legendView: some View {
+        return Group
+        {
+            if let legend = legend
+            {
+                let foregroundColor = self.colorScheme == .dark ? self.darkModeStyle.legendTextColor : self.style.legendTextColor
+                 Text(legend)
+                    .font(.callout)
+                    .foregroundColor(foregroundColor)
+            }
+        }
+    }
+    
+    var rateValueView: some View {
+        return Group
+        {
+            if let rateValue = rateValue
+            {
+                if rateValue != 0
+                {
+                    HStack {
+                        if rateValue > 0
+                        {
+                            Image(systemName: "arrow.up")
+                        }
+                        else if rateValue < 0
+                        {
+                            Image(systemName: "arrow.down")
+                        }
+                        Text("\(rateValue) %")
+                    }
+                    .fixedSize()
+                    .padding(.trailing)
+                }
+            }
+        }
+    }
     
     @discardableResult func getClosestDataPoint(toPoint: CGPoint, width:CGFloat, height: CGFloat) -> CGPoint {
         let points = self.data.onlyPoints()
@@ -133,7 +230,7 @@ public struct LineChartView: View {
         
         let index:Int = Int(round((toPoint.x)/stepWidth))
         if (index >= 0 && index < points.count){
-            self.currentValue = points[index]
+            self.currentValue = data.points[index]
             return CGPoint(x: CGFloat(index)*stepWidth, y: CGFloat(points[index])*stepHeight)
         }
         return .zero
@@ -141,13 +238,58 @@ public struct LineChartView: View {
 }
 
 struct WidgetView_Previews: PreviewProvider {
+    static let data = ChartData(values: [
+        ("Q1 2020", 10),
+        ("Q2 2020", 25),
+        ("Q3 2020", 28),
+        ("Q4 2020", 18),
+    ])
+    static let title = "Line chart"
+    static let legend = "Basic"
+    
     static var previews: some View {
-        Group {
-            LineChartView(data: [8,23,54,32,12,37,7,23,43], title: "Line chart", legend: "Basic")
-                .environment(\.colorScheme, .light)
+        ScrollView {
+            // MARK: - Legend and rate
+            Section(header: Text("Legend and rate"))
+            {
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.small, rateValue: 0)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.small, rateValue: 10)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.detail, rateValue: 10)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.medium, rateValue: -10)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.large, rateValue: 10)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.extraLarge, rateValue: -10)
+            }
             
-            LineChartView(data: [282.502, 284.495, 283.51, 285.019, 285.197, 286.118, 288.737, 288.455, 289.391, 287.691, 285.878, 286.46, 286.252, 284.652, 284.129, 284.188], title: "Line chart", legend: "Basic")
-            .environment(\.colorScheme, .light)
+            // MARK: - Legend
+            Section(header: Text("Legend"))
+            {
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.small)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.detail)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.medium)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.large)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.extraLarge)
+            }
+            
+            // MARK: - Rate
+            Section(header: Text("Rate"))
+            {
+                LineChartView(data: data, title: title, form: ChartForm.small, rateValue: 0)
+                LineChartView(data: data, title: title, form: ChartForm.small, rateValue: 10)
+                LineChartView(data: data, title: title, form: ChartForm.detail, rateValue: 10)
+                LineChartView(data: data, title: title, form: ChartForm.medium, rateValue: -10)
+                LineChartView(data: data, title: title, form: ChartForm.large, rateValue: 10)
+                LineChartView(data: data, title: title, form: ChartForm.extraLarge, rateValue: -10)
+            }
+            
+            // MARK: - Only title
+            Section(header: Text("Only title"))
+            {
+                LineChartView(data: data, title: title, form: ChartForm.small)
+                LineChartView(data: data, title: title, form: ChartForm.detail)
+                LineChartView(data: data, title: title, form: ChartForm.medium)
+                LineChartView(data: data, title: title, form: ChartForm.large)
+                LineChartView(data: data, title: title, form: ChartForm.extraLarge)
+            }
         }
     }
 }

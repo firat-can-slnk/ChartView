@@ -9,15 +9,23 @@
 import SwiftUI
 
 struct IndicatorPoint: View {
+    let knobColor: Color
+    let shadowColor: Color
+    
+    init(knobColor: Color = Colors.IndicatorKnob, shadowColor: Color = Colors.LegendColor) {
+        self.knobColor = knobColor
+        self.shadowColor = shadowColor
+    }
+    
     var body: some View {
         ZStack{
             Circle()
-                .fill(Colors.IndicatorKnob)
+                .fill(knobColor)
             Circle()
                 .stroke(Color.white, style: StrokeStyle(lineWidth: 4))
         }
         .frame(width: 14, height: 14)
-        .shadow(color: Colors.LegendColor, radius: 6, x: 0, y: 6)
+        .shadow(color: shadowColor, radius: 6, x: 0, y: 3)
     }
 }
 
