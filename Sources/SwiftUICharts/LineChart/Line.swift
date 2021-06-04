@@ -97,9 +97,10 @@ public struct Line: View {
 }
 
 struct Line_Previews: PreviewProvider {
+    static let data: [Double] = [12,-230,10,54]
     static var previews: some View {
         GeometryReader{ geometry in
-            Line(data: ChartData(points: [12,-230,10,54]), frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant(nil), maxDataValue: .constant(nil))
+            Line(data: ChartData(points: data), frame: .constant(geometry.frame(in: .local)), touchLocation: .constant(CGPoint(x: 100, y: 12)), showIndicator: .constant(true), minDataValue: .constant(nil), maxDataValue: .constant(nil))
         }.frame(width: 320, height: 160)
     }
 }
