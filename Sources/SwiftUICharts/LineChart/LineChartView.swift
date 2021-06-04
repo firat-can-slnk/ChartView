@@ -39,8 +39,8 @@ public struct LineChartView: View {
                 style: ChartStyle = Styles.lineChartStyleOne,
                 form: ChartForm = ChartForm.medium,
                 rateValue: Int? = 14,
-                dropShadow: Bool? = true,
-                valueSpecifier: String? = "%.1f") {
+                dropShadow: Bool = true,
+                valueSpecifier: String = "%.0f") {
         
         self.data = ChartData(points: data)
         self.title = title
@@ -49,8 +49,8 @@ public struct LineChartView: View {
         self.darkModeStyle = style.darkModeStyle != nil ? style.darkModeStyle! : Styles.lineViewDarkMode
         self.formSize = form.getSize()
         frame = CGSize(width: self.formSize.width, height: self.formSize.height/2)
-        self.dropShadow = dropShadow!
-        self.valueSpecifier = valueSpecifier!
+        self.dropShadow = dropShadow
+        self.valueSpecifier = valueSpecifier
         self.rateValue = rateValue
     }
     
