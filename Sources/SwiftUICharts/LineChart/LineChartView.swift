@@ -38,7 +38,7 @@ public struct LineChartView: View {
                 legend: String? = nil,
                 style: ChartStyle = Styles.lineChartStyleOne,
                 form: ChartForm = ChartForm.medium,
-                rateValue: Int? = 14,
+                rateValue: Int? = nil,
                 dropShadow: Bool = true,
                 valueSpecifier: String = "%.0f") {
         
