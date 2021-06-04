@@ -130,12 +130,12 @@ public struct Styles {
         dropShadowColor: Color.gray)
 }
 
-public enum ChartForm {
+public enum ChartForm: Comparable {
     case small
+    case detail
     case medium
     case large
     case extraLarge
-    case detail
     
     public func getSize() -> CGSize
     {
@@ -143,16 +143,16 @@ public enum ChartForm {
         {
             #if os(watchOS)
             case .small: return CGSize(width:120, height:90)
+            case .detail: return CGSize(width:180, height:160)
             case .medium: return CGSize(width:120, height:160)
             case .large: return CGSize(width:180, height:90)
             case .extraLarge: return CGSize(width:180, height:90)
-            case .detail: return CGSize(width:180, height:160)
             #else
             case .small: return CGSize(width:180, height:120)
+            case .detail: return CGSize(width:180, height:120)
             case .medium: return CGSize(width:180, height:240)
             case .large: return CGSize(width:360, height:120)
             case .extraLarge: return CGSize(width:360, height:240)
-            case .detail: return CGSize(width:180, height:120)
             #endif
             
         }
