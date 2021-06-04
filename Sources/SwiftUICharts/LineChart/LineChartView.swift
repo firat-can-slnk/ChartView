@@ -135,7 +135,10 @@ public struct LineChartView: View {
             let title = Text(self.title)
                             .font(.title)
                             .bold()
+                            .lineLimit(1)
                             .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
+                            .minimumScaleFactor(0.8)
+                            .padding(.trailing)
             
             if formSize != ChartForm.large.getSize() && formSize != ChartForm.extraLarge.getSize() {
                 
