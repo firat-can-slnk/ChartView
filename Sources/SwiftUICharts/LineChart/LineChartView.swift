@@ -144,8 +144,11 @@ public struct LineChartView: View {
         {
             let sideBySide = HStack
             {
-                legendView
-                Spacer()
+                if legend != nil
+                {
+                    legendView
+                    Spacer()
+                }
                 rateValueView
             }
             switch formSize {
