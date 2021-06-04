@@ -9,8 +9,13 @@
 import SwiftUI
 
 struct IndicatorPoint: View {
-    let knobColor: Color = Colors.IndicatorKnob
-    let shadowColor: Color = Colors.LegendColor
+    let knobColor: Color
+    let shadowColor: Color
+    
+    init(knobColor: Color = Colors.IndicatorKnob, shadowColor: Color = Colors.LegendColor) {
+        self.knobColor = knobColor
+        self.shadowColor = shadowColor
+    }
     
     var body: some View {
         ZStack{
