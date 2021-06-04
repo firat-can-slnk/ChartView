@@ -84,6 +84,7 @@ public struct LineChartView: View {
                                 .offset(x: 0, y: 10)
                             Spacer()
                         }
+                        .padding(.top)
                         .transition(.scale)
                     }
                     Spacer()
