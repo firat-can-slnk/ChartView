@@ -130,20 +130,33 @@ public struct Styles {
         dropShadowColor: Color.gray)
 }
 
-public struct ChartForm {
-    #if os(watchOS)
-    public static let small = CGSize(width:120, height:90)
-    public static let medium = CGSize(width:120, height:160)
-    public static let large = CGSize(width:180, height:90)
-    public static let extraLarge = CGSize(width:180, height:90)
-    public static let detail = CGSize(width:180, height:160)
-    #else
-    public static let small = CGSize(width:180, height:120)
-    public static let medium = CGSize(width:180, height:240)
-    public static let large = CGSize(width:360, height:120)
-    public static let extraLarge = CGSize(width:360, height:240)
-    public static let detail = CGSize(width:180, height:120)
-    #endif
+public enum ChartForm {
+    case small
+    case medium
+    case large
+    case extraLarge
+    case detail
+    
+    public func getSize() -> CGSize
+    {
+        switch self
+        {
+            #if os(watchOS)
+            case .small: return CGSize(width:120, height:90)
+            case .medium: return CGSize(width:120, height:160)
+            case .large: return CGSize(width:180, height:90)
+            case .extraLarge: return CGSize(width:180, height:90)
+            case .detail: return CGSize(width:180, height:160)
+            #else
+            case .small: return CGSize(width:180, height:120)
+            case .medium: return CGSize(width:180, height:240)
+            case .large: return CGSize(width:360, height:120)
+            case .extraLarge: return CGSize(width:360, height:240)
+            case .detail: return CGSize(width:180, height:120)
+            #endif
+            
+        }
+    }
 }
 
 public class ChartStyle {

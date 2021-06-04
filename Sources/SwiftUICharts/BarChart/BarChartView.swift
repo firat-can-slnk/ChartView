@@ -32,15 +32,15 @@ public struct BarChartView : View {
         }
     }
     var isFullWidth:Bool {
-        return self.formSize == ChartForm.large
+        return self.formSize == ChartForm.large.getSize()
     }
-    public init(data:ChartData, title: String, legend: String? = nil, style: ChartStyle = Styles.barChartStyleOrangeLight, form: CGSize? = ChartForm.medium, dropShadow: Bool? = true, cornerImage:Image? = Image(systemName: "waveform.path.ecg"), valueSpecifier: String? = "%.1f", animatedToBack: Bool = false){
+    public init(data:ChartData, title: String, legend: String? = nil, style: ChartStyle = Styles.barChartStyleOrangeLight, form: ChartForm = ChartForm.medium, dropShadow: Bool? = true, cornerImage:Image? = Image(systemName: "waveform.path.ecg"), valueSpecifier: String? = "%.1f", animatedToBack: Bool = false){
         self.data = data
         self.title = title
         self.legend = legend
         self.style = style
         self.darkModeStyle = style.darkModeStyle != nil ? style.darkModeStyle! : Styles.barChartStyleOrangeDark
-        self.formSize = form!
+        self.formSize = form.getSize()
         self.dropShadow = dropShadow!
         self.cornerImage = cornerImage
         self.valueSpecifier = valueSpecifier!
@@ -64,7 +64,7 @@ public struct BarChartView : View {
                             .font(.headline)
                             .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
                     }
-                    if(self.formSize == ChartForm.large && self.legend != nil && !showValue) {
+                    if(self.formSize == ChartForm.large.getSize() && self.legend != nil && !showValue) {
                         Text(self.legend!)
                             .font(.callout)
                             .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.accentColor : self.style.accentColor)
@@ -80,7 +80,7 @@ public struct BarChartView : View {
                             accentColor: self.colorScheme == .dark ? self.darkModeStyle.accentColor : self.style.accentColor,
                             gradient: self.colorScheme == .dark ? self.darkModeStyle.gradientColor : self.style.gradientColor,
                             touchLocation: self.$touchLocation)
-                if self.legend != nil  && self.formSize == ChartForm.medium && !self.showLabelValue{
+                if self.legend != nil  && self.formSize == ChartForm.medium.getSize() && !self.showLabelValue{
                     Text(self.legend!)
                         .font(.headline)
                         .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.legendTextColor : self.style.legendTextColor)
@@ -102,7 +102,7 @@ public struct BarChartView : View {
                     self.touchLocation = value.location.x/self.formSize.width
                     self.showValue = true
                     self.currentValue = self.getCurrentValue()?.1 ?? 0
-                    if(self.data.valuesGiven && self.formSize == ChartForm.medium) {
+                    if(self.data.valuesGiven && self.formSize == ChartForm.medium.getSize()) {
                         self.showLabelValue = true
                     }
                 })

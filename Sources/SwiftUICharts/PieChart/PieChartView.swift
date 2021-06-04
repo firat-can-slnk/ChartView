@@ -26,14 +26,14 @@ public struct PieChartView : View {
         }
     }
     
-    public init(data: [Double], title: String, legend: String? = nil, style: ChartStyle = Styles.pieChartStyleOne, form: CGSize? = ChartForm.medium, dropShadow: Bool? = true, valueSpecifier: String? = "%.1f"){
+    public init(data: [Double], title: String, legend: String? = nil, style: ChartStyle = Styles.pieChartStyleOne, form: ChartForm = ChartForm.medium, dropShadow: Bool? = true, valueSpecifier: String? = "%.1f"){
         self.data = data
         self.title = title
         self.legend = legend
         self.style = style
-        self.formSize = form!
-        if self.formSize == ChartForm.large {
-            self.formSize = ChartForm.extraLarge
+        self.formSize = form.getSize()
+        if self.formSize == ChartForm.large.getSize() {
+            self.formSize = ChartForm.extraLarge.getSize()
         }
         self.dropShadow = dropShadow!
         self.valueSpecifier = valueSpecifier!
