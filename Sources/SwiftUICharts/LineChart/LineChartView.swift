@@ -195,13 +195,53 @@ public struct LineChartView: View {
 }
 
 struct WidgetView_Previews: PreviewProvider {
+    static let data: [Double] = [10, 10, 10, 10, 0, 10, 10, 10, 10, 10, 10, 10, 0, 10, 10, 10, 10]
+    static let title = "Line chart"
+    static let legend = "Basic"
+    
     static var previews: some View {
-        Group {
-            LineChartView(data: [8,23,54,32,12,37,7,23,43], title: "Line chart", legend: "Basic")
-                .environment(\.colorScheme, .light)
+        ScrollView {
+            // MARK: - Legend and rate
+            Section(header: Text("Legend and rate"))
+            {
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.small, rateValue: 0)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.small, rateValue: 10)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.detail, rateValue: 10)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.medium, rateValue: -10)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.large, rateValue: 10)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.extraLarge, rateValue: -10)
+            }
             
-            LineChartView(data: [282.502, 284.495, 283.51, 285.019, 285.197, 286.118, 288.737, 288.455, 289.391, 287.691, 285.878, 286.46, 286.252, 284.652, 284.129, 284.188], title: "Line chart", legend: "Basic")
-            .environment(\.colorScheme, .light)
+            // MARK: - Legend
+            Section(header: Text("Legend"))
+            {
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.small)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.detail)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.medium)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.large)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.extraLarge)
+            }
+            
+            // MARK: - Rate
+            Section(header: Text("Rate"))
+            {
+                LineChartView(data: data, title: title, form: ChartForm.small, rateValue: 0)
+                LineChartView(data: data, title: title, form: ChartForm.small, rateValue: 10)
+                LineChartView(data: data, title: title, form: ChartForm.detail, rateValue: 10)
+                LineChartView(data: data, title: title, form: ChartForm.medium, rateValue: -10)
+                LineChartView(data: data, title: title, form: ChartForm.large, rateValue: 10)
+                LineChartView(data: data, title: title, form: ChartForm.extraLarge, rateValue: -10)
+            }
+            
+            // MARK: - Only title
+            Section(header: Text("Only title"))
+            {
+                LineChartView(data: data, title: title, form: ChartForm.small)
+                LineChartView(data: data, title: title, form: ChartForm.detail)
+                LineChartView(data: data, title: title, form: ChartForm.medium)
+                LineChartView(data: data, title: title, form: ChartForm.large)
+                LineChartView(data: data, title: title, form: ChartForm.extraLarge)
+            }
         }
     }
 }
