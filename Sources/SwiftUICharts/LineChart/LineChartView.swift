@@ -64,14 +64,7 @@ public struct LineChartView: View {
                 VStack
                 {
                     if(!self.showIndicatorDot){
-                        VStack(alignment: .leading, spacing: 8){
-                            Text(self.title)
-                                .font(.title)
-                                .bold()
-                                .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
-                            
-                            legendAndRateValueView
-                        }
+                        topRowView
                         .transition(.opacity)
                         .animation(.easeIn(duration: 0.1))
                         .padding([.leading, .top])
@@ -118,7 +111,33 @@ public struct LineChartView: View {
             })
         )
     }
-    
+    var topRowView: some View
+    {
+        VStack(alignment: .leading, spacing: 8)
+        {
+            let title = Text(self.title)
+                            .font(.title)
+                            .bold()
+                            .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
+            
+            if formSize != ChartForm.large.getSize() && formSize != ChartForm.extraLarge.getSize() {
+                
+                title
+                legendAndRateValueView
+            }
+            else
+            {
+                HStack
+                {
+                    title
+                    Spacer()
+                    rateValueView
+                }
+                legendView
+            }
+        }
+        
+    }
     var legendAndRateValueView: some View
     {
         Group
@@ -128,8 +147,6 @@ public struct LineChartView: View {
                 legendView
                 Spacer()
                 rateValueView
-                    .fixedSize()
-                    .padding(.trailing)
             }
             switch formSize {
                 case ChartForm.small.getSize(): sideBySide
@@ -176,6 +193,8 @@ public struct LineChartView: View {
                         }
                         Text("\(rateValue) %")
                     }
+                    .fixedSize()
+                    .padding(.trailing)
                 }
             }
         }
