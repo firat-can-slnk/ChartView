@@ -91,6 +91,9 @@ public struct LineChartView: View {
                 }.frame(width: self.formSize.width, height: self.formSize.height)
                 VStack
                 {
+                    let additionalFrameHeight: CGFloat =
+                        (formSize == ChartForm.medium.getSize() || formSize == ChartForm.extraLarge.getSize()) ? 30.0 : 0.0
+                    
                     Spacer()
                     GeometryReader{ geometry in
                         Line(data: self.data,
@@ -102,10 +105,11 @@ public struct LineChartView: View {
                              gradient: self.style.gradientColor
                         )
                     }
-                    .frame(width: frame.width, height: frame.height + (legend == nil && rateValue == nil ? 15 : 0))
+                    .offset(y: showIndicatorDot ? 0 : 5)
+                    .frame(width: frame.width, height: frame.height + (legend == nil && rateValue == nil ? 10 : 0) + additionalFrameHeight)
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                 }
-            }.frame(width: self.formSize.width, height: self.formSize.height)
+            }.frame(height: self.formSize.height)
         }
         .gesture(DragGesture()
         .onChanged({ value in
@@ -270,8 +274,11 @@ struct WidgetView_Previews: PreviewProvider {
             // MARK: - Legend and rate
             Section(header: Text("Legend and rate"))
             {
-                LineChartView(data: data, title: title, legend: legend, form: ChartForm.small, rateValue: 0)
-                LineChartView(data: data, title: title, legend: legend, form: ChartForm.small, rateValue: 10)
+                HStack
+                {
+                    LineChartView(data: data, title: title, legend: legend, form: ChartForm.small, rateValue: 0)
+                    LineChartView(data: data, title: title, legend: legend, form: ChartForm.small, rateValue: 10)
+                }
                 LineChartView(data: data, title: title, legend: legend, form: ChartForm.detail, rateValue: 10)
                 LineChartView(data: data, title: title, legend: legend, form: ChartForm.medium, rateValue: -10)
                 LineChartView(data: data, title: title, legend: legend, form: ChartForm.large, rateValue: 10)
