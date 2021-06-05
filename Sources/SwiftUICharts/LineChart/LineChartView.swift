@@ -33,14 +33,14 @@ public struct LineChartView: View {
         }
     }
     var frame = CGSize(width: 180, height: 120)
-    private var rateValue: Int?
+    private var rateValue: Double?
     
     public init(data: ChartData,
                 title: String,
                 legend: String? = nil,
                 style: ChartStyle = Styles.lineChartStyleOne,
                 form: ChartForm = ChartForm.medium,
-                rateValue: Int? = nil,
+                rateValue: Double? = nil,
                 dropShadow: Bool = true,
                 valueSpecifier: String = "%.0f") {
         
@@ -203,18 +203,33 @@ public struct LineChartView: View {
         {
             if let rateValue = rateValue
             {
-                if rateValue != 0
+                if rateValue != 0 && !rateValue.isNaN
                 {
                     HStack {
-                        if rateValue > 0
+                        if rateValue.isFinite
                         {
-                            Image(systemName: "arrow.up")
+                            if rateValue > 0
+                            {
+                                Image(systemName: "arrow.up")
+                            }
+                            else if rateValue < 0
+                            {
+                                Image(systemName: "arrow.down")
+                            }
+                            Text("\(Int((rateValue * 100).rounded())) %")
                         }
-                        else if rateValue < 0
+                        else
                         {
-                            Image(systemName: "arrow.down")
+                            if rateValue == -.infinity
+                            {
+                                Image(systemName: "arrow.up")
+                            }
+                            else if rateValue == .infinity
+                            {
+                                Image(systemName: "arrow.down")
+                            }
+                            Text("> 999 %")
                         }
-                        Text("\(rateValue) %")
                     }
                     .fixedSize()
                     .padding(.trailing)
