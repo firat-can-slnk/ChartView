@@ -140,7 +140,7 @@ public struct LineChartView: View {
                             .bold()
                             .lineLimit(1)
                             .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
-                            .minimumScaleFactor(0.8)
+                            .minimumScaleFactor(0.5)
                             .padding(.trailing)
             
             if formSize != ChartForm.large.getSize() && formSize != ChartForm.extraLarge.getSize() {
