@@ -34,6 +34,7 @@ public struct LineChartView: View {
     }
     var frame = CGSize(width: 180, height: 120)
     private var rateValue: Double?
+    let showInfinities: Bool
     
     public init(data: ChartData,
                 title: String,
@@ -42,7 +43,8 @@ public struct LineChartView: View {
                 form: ChartForm = ChartForm.medium,
                 rateValue: Double? = nil,
                 dropShadow: Bool = true,
-                valueSpecifier: String = "%.0f") {
+                valueSpecifier: String = "%.0f",
+                showInfinities: Bool = false) {
         
         self.data = data
         self.title = title
@@ -54,6 +56,7 @@ public struct LineChartView: View {
         self.dropShadow = dropShadow
         self.valueSpecifier = valueSpecifier
         self.rateValue = rateValue
+        self.showInfinities = showInfinities
     }
     
     public var body: some View {
@@ -218,7 +221,7 @@ public struct LineChartView: View {
                             }
                             Text("\(Int((rateValue * 100).rounded())) %")
                         }
-                        else
+                        else if showInfinities
                         {
                             if rateValue == -.infinity
                             {
