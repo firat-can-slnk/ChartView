@@ -61,10 +61,6 @@ public struct LineChartView: View {
     
     public var body: some View {
         ZStack(alignment: .center){
-            RoundedRectangle(cornerRadius: 20)
-                .fill(self.colorScheme == .dark ? self.darkModeStyle.backgroundColor : self.style.backgroundColor)
-                .frame(width: frame.width, height: self.formSize.height, alignment: .center)
-                .shadow(color: self.style.dropShadowColor, radius: self.dropShadow ? 8 : 0)
             ZStack(alignment: .top){
                 VStack
                 {
@@ -73,7 +69,6 @@ public struct LineChartView: View {
                         .transition(.opacity)
                         .animation(.easeIn(duration: 0.1))
                         .padding([.leading, .top])
-                        .frame(width: frame.width, height: self.formSize.height, alignment: .topLeading)
                     }else{
                         HStack{
                             Spacer()
@@ -88,7 +83,7 @@ public struct LineChartView: View {
                             .padding(.top, 2)
                     }
                     Spacer()
-                }.frame(width: self.formSize.width, height: self.formSize.height)
+                }.frame(maxWidth: self.formSize.width, maxHeight: self.formSize.height)
                 VStack
                 {
                     let additionalFrameHeight: CGFloat =
@@ -105,12 +100,13 @@ public struct LineChartView: View {
                              gradient: self.style.gradientColor
                         )
                     }
-                    .offset(y: showIndicatorDot ? 0 : 5)
-                    .frame(width: frame.width, height: frame.height + (legend == nil && rateValue == nil ? 10 : 0) + additionalFrameHeight)
+                    .offset(y: showIndicatorDot ? -2 : 0)
+                    .frame(minWidth: 0, idealWidth: frame.width, maxWidth: frame.width, minHeight: 0, idealHeight: frame.height, maxHeight: frame.height + (legend == nil && rateValue == nil ? 10 : 0) + additionalFrameHeight)
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                 }
             }.frame(height: self.formSize.height)
         }
+        .background(self.colorScheme == .dark ? self.darkModeStyle.backgroundColor.cornerRadius(20) : self.style.backgroundColor.cornerRadius(20))
         .gesture(DragGesture()
         .onChanged({ value in
             self.touchLocation = value.location
@@ -148,8 +144,11 @@ public struct LineChartView: View {
                             .padding(.trailing)
             
             if formSize != ChartForm.large.getSize() && formSize != ChartForm.extraLarge.getSize() {
-                
-                title
+                HStack
+                {
+                    title
+                    Spacer()
+                }
                 legendAndRateValueView
             }
             else
@@ -201,6 +200,8 @@ public struct LineChartView: View {
                  Text(legend)
                     .font(.callout)
                     .foregroundColor(foregroundColor)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
         }
     }
@@ -238,7 +239,8 @@ public struct LineChartView: View {
                             Text("> 999 %")
                         }
                     }
-                    .fixedSize()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                     .padding(.trailing)
                 }
             }
@@ -277,12 +279,12 @@ struct WidgetView_Previews: PreviewProvider {
                 HStack
                 {
                     LineChartView(data: data, title: title, legend: legend, form: ChartForm.small, rateValue: 0)
-                    LineChartView(data: data, title: title, legend: legend, form: ChartForm.small, rateValue: 10)
-                }
-                LineChartView(data: data, title: title, legend: legend, form: ChartForm.detail, rateValue: 10)
-                LineChartView(data: data, title: title, legend: legend, form: ChartForm.medium, rateValue: -10)
-                LineChartView(data: data, title: title, legend: legend, form: ChartForm.large, rateValue: 10)
-                LineChartView(data: data, title: title, legend: legend, form: ChartForm.extraLarge, rateValue: -10)
+                    LineChartView(data: data, title: title, legend: legend, form: ChartForm.small, rateValue: 1.0)
+                }.padding().padding()
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.detail, rateValue: 1.0)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.medium, rateValue: -1.0)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.large, rateValue: 1.0)
+                LineChartView(data: data, title: title, legend: legend, form: ChartForm.extraLarge, rateValue: -1.0)
             }
             
             // MARK: - Legend
@@ -299,11 +301,11 @@ struct WidgetView_Previews: PreviewProvider {
             Section(header: Text("Rate"))
             {
                 LineChartView(data: data, title: title, form: ChartForm.small, rateValue: 0)
-                LineChartView(data: data, title: title, form: ChartForm.small, rateValue: 10)
-                LineChartView(data: data, title: title, form: ChartForm.detail, rateValue: 10)
-                LineChartView(data: data, title: title, form: ChartForm.medium, rateValue: -10)
-                LineChartView(data: data, title: title, form: ChartForm.large, rateValue: 10)
-                LineChartView(data: data, title: title, form: ChartForm.extraLarge, rateValue: -10)
+                LineChartView(data: data, title: title, form: ChartForm.small, rateValue: 1.0)
+                LineChartView(data: data, title: title, form: ChartForm.detail, rateValue: 1.0)
+                LineChartView(data: data, title: title, form: ChartForm.medium, rateValue: -1.0)
+                LineChartView(data: data, title: title, form: ChartForm.large, rateValue: 1.0)
+                LineChartView(data: data, title: title, form: ChartForm.extraLarge, rateValue: -1.0)
             }
             
             // MARK: - Only title
@@ -316,5 +318,6 @@ struct WidgetView_Previews: PreviewProvider {
                 LineChartView(data: data, title: title, form: ChartForm.extraLarge)
             }
         }
+        .background(Color.green)
     }
 }
