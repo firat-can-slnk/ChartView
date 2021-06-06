@@ -12,7 +12,7 @@ struct IndicatorPoint: View {
     let knobColor: Color
     let shadowColor: Color
     
-    init(knobColor: Color = Colors.IndicatorKnob, shadowColor: Color = Colors.LegendColor) {
+    init(knobColor: Color = Colors.IndicatorKnob, shadowColor: Color = Color.black.opacity(0.1)) {
         self.knobColor = knobColor
         self.shadowColor = shadowColor
     }
