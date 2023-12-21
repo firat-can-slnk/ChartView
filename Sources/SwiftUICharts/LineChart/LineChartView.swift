@@ -249,13 +249,17 @@ public struct LineChartView: View {
     
     @discardableResult func getClosestDataPoint(toPoint: CGPoint, width:CGFloat, height: CGFloat) -> CGPoint {
         let points = self.data.onlyPoints()
-        let stepWidth: CGFloat = width / CGFloat(points.count-1)
-        let stepHeight: CGFloat = height / CGFloat(points.max()! + points.min()!)
         
-        let index:Int = Int(round((toPoint.x)/stepWidth))
-        if (index >= 0 && index < points.count){
-            self.currentValue = data.points[index]
-            return CGPoint(x: CGFloat(index)*stepWidth, y: CGFloat(points[index])*stepHeight)
+        if !points.isEmpty
+        {
+            let stepWidth: CGFloat = width / CGFloat(points.count-1)
+            let stepHeight: CGFloat = height / CGFloat(points.max()! + points.min()!)
+            
+            let index:Int = Int(round((toPoint.x)/stepWidth))
+            if (index >= 0 && index < points.count){
+                self.currentValue = data.points[index]
+                return CGPoint(x: CGFloat(index)*stepWidth, y: CGFloat(points[index])*stepHeight)
+            }
         }
         return .zero
     }
