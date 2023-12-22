@@ -77,10 +77,10 @@ public struct LineChartView: View {
                                 .offset(x: 0, y: 10)
                             Spacer()
                         }
-                        .transition(.scale)
+                        .transition(.opacity)
                         
                         selectionLabelView
-                            .padding(.top, 2)
+                            .padding(.top, formSize == ChartForm.medium.getSize() || formSize == ChartForm.extraLarge.getSize() ? 2 : 0)
                     }
                     Spacer()
                 }.frame(maxWidth: self.formSize.width, maxHeight: self.formSize.height)
@@ -102,7 +102,7 @@ public struct LineChartView: View {
                     }
                     .offset(y: showIndicatorDot ? -2 : 0)
                     .frame(minWidth: 0, idealWidth: frame.width, maxWidth: frame.width, minHeight: 0, idealHeight: frame.height, maxHeight: frame.height + (legend == nil && rateValue == nil ? 10 : 0) + additionalFrameHeight)
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
             }.frame(height: self.formSize.height)
         }
@@ -114,7 +114,9 @@ public struct LineChartView: View {
             self.getClosestDataPoint(toPoint: value.location, width:self.frame.width, height: self.frame.height)
         })
             .onEnded({ value in
-                self.showIndicatorDot = false
+                withAnimation {
+                    self.showIndicatorDot = false
+                }
             })
         )
     }
@@ -207,7 +209,7 @@ public struct LineChartView: View {
     }
     
     var rateValueView: some View {
-        return Group
+        Group
         {
             if let rateValue = rateValue
             {
