@@ -80,7 +80,7 @@ public struct LineChartView: View {
                         .transition(.scale)
                         
                         selectionLabelView
-                            .padding(.top, 2)
+                            .padding(.top, (formSize == ChartForm.medium.getSize() || formSize == ChartForm.extraLarge.getSize()) ? 2 : 0)
                     }
                     Spacer()
                 }.frame(maxWidth: self.formSize.width, maxHeight: self.formSize.height)
