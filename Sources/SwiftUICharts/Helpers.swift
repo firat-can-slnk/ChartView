@@ -196,8 +196,19 @@ public class ChartStyle {
     }
 }
 
+public class ChartPoint: Identifiable
+{
+    public let id: String
+    public let value: Double
+    
+    public init(_ id: String, _ value: Double) {
+        self.id = id
+        self.value = value
+    }
+}
+
 public class ChartData: ObservableObject, Identifiable {
-    @Published var points: [(String,Double)]
+    @Published public var points: [(String,Double)]
     var valuesGiven: Bool = false
     var ID = UUID()
     
@@ -219,6 +230,13 @@ public class ChartData: ObservableObject, Identifiable {
     public init<N: BinaryFloatingPoint & LosslessStringConvertible>(numberValues:[(N,N)]){
         self.points = numberValues.map{(String($0.0), Double($0.1))}
         self.valuesGiven = true
+    }
+    
+    public func getPoints() -> [ChartPoint]
+    {
+        return points.map {
+            ChartPoint($0.0, $0.1)
+        }
     }
     
     public func onlyPoints() -> [Double] {
